@@ -1,0 +1,157 @@
+
+= Tiamat
+
+== Summary
+
+Automatic parallelism across multiple cores and machines: a plugin for
+Pure.
+
+== Synopsis
+
+  require 'tiamat/autoconfig'
+  require 'benchmark'
+  
+  mod = Pure.define do
+    def total(left, right)
+      left + right
+    end
+  
+    def left
+      (1..500_000).inject(0) { |acc, n| acc + n }
+    end
+  
+    def right
+      (1..500_000).inject(0) { |acc, n| acc + n }
+    end
+  end
+  
+  # compute using two threads
+  puts Benchmark.realtime { mod.compute(2).total }  # => 0.4432079792022705
+  
+  # compute using two local Ruby interpreters
+  Tiamat.open_local(2) {
+    puts Benchmark.realtime { mod.compute.total }   # => 0.2420041561126709
+  }
+
+== Description
+
+Tiamat is a worker plugin for the pure functional package (Pure).  It
+uses DRb to coordinate Ruby interpreters which are driven by Pure's
+parallelizing engine.
+
+== Adding +require+ Paths to Local Servers
+
+  require 'tiamat/autoconfig'
+  require 'pure/dsl'
+
+  require 'matrix'
+
+  mod = pure do
+    def f(x, y)
+      x + y
+    end
+  end
+
+  a = Matrix[[1, 2], [3 ,4]]
+  b = Matrix[[5 ,6] ,[7 ,8]]
+
+  Tiamat.open_local(2, 'matrix') {
+    puts mod.compute(:x => a, :y => b).f  # => Matrix[[6, 8], [10, 12]]
+  }
+
+== Running Remote Servers
+
+First install Tiamat on the remote machines.  To start the server,
+
+  % ruby tiamat-server [drb address] [tiamat version] Pure::Compiler::RubyParser pure/compiler/ruby_parser [additional requires]
+
+(Other compilers may exist in the future, but currently
+RubyParser/Ruby2Ruby is the only game in town.)
+
+For example,
+
+  % ruby tiamat-server druby://192.168.4.1:27272 0.1.0 Pure::Compiler::RubyParser pure/compiler/ruby_parser matrix complex
+
+This will make the Matrix and Complex classes available on the remote
+server.
+
+To connect (continuing the Synopsis example),
+
+  Tiamat.open_remote('druby://192.168.4.1:27272', 'druby://192.168.4.2:27272') {
+    puts Benchmark.realtime { mod.compute.total }
+  }
+
+== Security
+
+Running <tt>tiamat-server</tt> is among the most insecure things you
+can possibly do with a computer.  The purpose of
+<tt>tiamat-server</tt> is to run arbitrary code.  Only run it inside a
+secure network or private tunnel.
+
+== About DRbConnError
+
+  require 'tiamat/autoconfig'
+  require 'pure/dsl'
+
+  Tiamat.open_local(2) {
+    pure do
+      def hello(out)
+        out.puts("hello")
+      end
+    end.compute(:out => STDOUT).hello  # => raises DRb::DRbConnError
+  }
+
+This fails because we are trying to send STDOUT to another Ruby
+interpreter.  Some Ruby objects have no Marshal.dump, such as IO
+instances (like STDOUT) and Procs.  To compensate the remote DRb
+server tries to phone home with a proxy object but no local server is
+running.
+
+If you are interested in a quick fix, try placing this at the
+beginning of your code:
+
+  require 'drb'
+  DRb.start_service
+
+See the DRb documentation for more information.
+
+Tiamat does not start a local DRb service because the passing of
+undumpable arguments to a pure function is likely to be an error, as
+the generated proxies are not thread-safe.
+
+== Install
+
+  % gem install tiamat
+
+Or for the (non-gem) .tgz package,
+
+  % ruby install.rb [--uninstall]
+
+== Author
+
+* James M. Lawrence <quixoticsycophant@gmail.com>
+
+== License
+  
+  Copyright (c) 2009 James M. Lawrence.  All rights reserved.
+  
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+

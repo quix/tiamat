@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'thread'
+require 'drb'
+
+require 'tiamat/version'
+require 'tiamat/error'
+require 'tiamat/tiamat_server'
+
+Tiamat::TiamatServer.run(*ARGV)
