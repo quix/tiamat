@@ -14,8 +14,6 @@ module Tiamat
     attr_reader :uri
 
     def close
-      connection.close
-    rescue DRb::DRbConnError
     end
 
     def evaluate_function(*args)
@@ -26,14 +24,6 @@ module Tiamat
 
     def connect(&block)
       super(self.class.wait_interval, self.class.timeout, &block)
-    end
-
-    def connection
-      result = nil
-      DRb::DRbConn.open(@uri) { |conn|
-        result = conn
-      }
-      result
     end
 
     class << self

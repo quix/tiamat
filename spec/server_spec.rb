@@ -37,16 +37,6 @@ describe Tiamat::Server do
     }.should raise_error(DRb::DRbConnError, %r!DRbServerNotFound!)
   end
 
-  it "should close the client-side connection upon close()" do
-    conn = @server.instance_eval { connection }
-    conn.should_not be_nil
-    conn.instance_eval { @protocol }.should_not be_nil
-
-    @server.close
-
-    conn.instance_eval { @protocol }.should be_nil
-  end
-
   it "should ignore subsequent calls to close()" do
     lambda {
       @server.close
