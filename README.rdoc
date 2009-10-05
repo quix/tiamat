@@ -39,43 +39,57 @@ Tiamat is a worker plugin for the pure functional package (Pure).  It
 uses DRb to coordinate Ruby interpreters which are driven by Pure's
 parallelizing engine.
 
+== Install
+
+  % gem install tiamat
+
+Or for the (non-gem) .tgz package,
+
+  % ruby install.rb [--uninstall]
+
+== Links
+
+* pure source: http://github.com/quix/pure
+* tiamat source: http://github.com/quix/tiamat
+
 == Adding +require+ Paths to Local Servers
 
   require 'tiamat/autoconfig'
   require 'pure/dsl'
-
+  
   require 'matrix'
-
+  require 'complex'
+  
   mod = pure do
     def f(x, y)
       x + y
     end
   end
-
-  a = Matrix[[1, 2], [3 ,4]]
-  b = Matrix[[5 ,6] ,[7 ,8]]
-
-  Tiamat.open_local(2, 'matrix') {
-    puts mod.compute(:x => a, :y => b).f  # => Matrix[[6, 8], [10, 12]]
+  
+  a = Matrix[[1, 2], [3, 4]]
+  b = Matrix[[1, Complex(0, 1)], [Complex(0, -1), 1]]
+  
+  Tiamat.open_local(2, 'matrix', 'complex') {
+    puts mod.compute(:x => a, :y => b).f  # => Matrix[[2, 2+1i], [3-1i, 5]]
   }
 
 == Running Remote Servers
 
 First install Tiamat on the remote machines.  To start the server,
 
-  % ruby tiamat-server [drb address] [tiamat version] Pure::Compiler::RubyParser pure/compiler/ruby_parser [additional requires]
+  % tiamat-server [drb address] [tiamat version] Pure::Compiler::RubyParser pure/compiler/ruby_parser [additional requires]
 
 (Other compilers may exist in the future, but currently
 RubyParser/Ruby2Ruby is the only game in town.)
 
 For example,
 
-  % ruby tiamat-server druby://192.168.4.1:27272 0.1.0 Pure::Compiler::RubyParser pure/compiler/ruby_parser matrix complex
+  % tiamat-server druby://192.168.4.1:27272 0.1.0 Pure::Compiler::RubyParser pure/compiler/ruby_parser matrix complex
 
 This will make the Matrix and Complex classes available on the remote
 server.
 
-To connect (continuing the Synopsis example),
+To connect (continuing the example in Synopsis),
 
   Tiamat.open_remote('druby://192.168.4.1:27272', 'druby://192.168.4.2:27272') {
     puts Benchmark.realtime { mod.compute.total }
@@ -103,7 +117,7 @@ secure network or private tunnel.
 
 This fails because we are trying to send STDOUT to another Ruby
 interpreter.  Some Ruby objects have no Marshal.dump, such as IO
-instances (like STDOUT) and Procs.  To compensate the remote DRb
+instances (like STDOUT) and Procs.  To compensate, the remote DRb
 server tries to phone home with a proxy object but no local server is
 running.
 
@@ -118,14 +132,6 @@ See the DRb documentation for more information.
 Tiamat does not start a local DRb service because the passing of
 undumpable arguments to a pure function is likely to be an error, as
 the generated proxies are not thread-safe.
-
-== Install
-
-  % gem install tiamat
-
-Or for the (non-gem) .tgz package,
-
-  % ruby install.rb [--uninstall]
 
 == Author
 
