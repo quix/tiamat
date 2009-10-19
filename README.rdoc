@@ -39,6 +39,9 @@ Tiamat is a worker plugin for the pure functional package (Pure).  It
 uses DRb to coordinate Ruby interpreters which are driven by Pure's
 parallelizing engine.
 
+Tiamat has been tested on MRI 1.8.6, 1.8.7, 1.9.1, 1.9.2, and
+jruby-1.4--1.8.
+
 == Install
 
   % gem install tiamat
