@@ -1,11 +1,31 @@
 #!/usr/bin/env ruby
+#
+# Search for tiamat installation in this order:
+#   * available already
+#   * available after rubygems required
+#   * avaliable through relative path to this file
+#
 
-require 'rubygems'
 require 'thread'
 require 'drb'
 
-require 'tiamat/version'
-require 'tiamat/error'
-require 'tiamat/tiamat_server'
+lambda {
+  req = lambda {
+    require 'tiamat/version'
+    require 'tiamat/error'
+    require 'tiamat/tiamat_server'
+  }
+  begin
+    req.call
+  rescue LoadError
+    require 'rubygems'
+    begin
+      req.call
+    rescue LoadError
+      $LOAD_PATH.unshift File.dirname(__FILE__) + "/../lib"
+      req.call
+    end
+  end
+}.call
 
 Tiamat::TiamatServer.run(*ARGV)
