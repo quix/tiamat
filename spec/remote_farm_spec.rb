@@ -6,7 +6,7 @@ describe Tiamat::RemoteFarm do
       "druby://localhost:#{n}"
     }
     @servers = uris.map { |uri|
-      Tiamat::LocalChildServer.new(uri, *Tiamat.compiler)
+      Tiamat::LocalChildServer.new(uri, *Tiamat.compiler.reverse)
     }
     @farm = Tiamat::RemoteFarm.new(*uris)
     Tiamat::Worker.open(@farm)

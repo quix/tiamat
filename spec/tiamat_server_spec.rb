@@ -4,7 +4,9 @@ require 'tiamat/tiamat_server'
 
 describe Tiamat::TiamatServer do
   before :all do
-    @server = Tiamat::TiamatServer.new(Tiamat::VERSION, *Tiamat.compiler)
+    @server = Tiamat::TiamatServer.new(
+      Tiamat::VERSION, *Tiamat.compiler.reverse
+    )
   end
 
   it "should evaluate a pure function spec" do
@@ -40,7 +42,7 @@ describe Tiamat::TiamatServer do
   it "should raise error when version doesn't match" do
     message = "expected version #{Tiamat::VERSION}, got 0.0.0"
     lambda {
-      Tiamat::TiamatServer.new("0.0.0", *Tiamat.compiler)
+      Tiamat::TiamatServer.new("0.0.0", *Tiamat.compiler.reverse)
     }.should raise_error(Tiamat::VersionError, message)
 
     Tiamat::VersionError.
@@ -51,7 +53,7 @@ describe Tiamat::TiamatServer do
   it "should run" do
     uri = "druby://localhost:27272"
     thread = Thread.new {
-      Tiamat::TiamatServer.run(uri, Tiamat::VERSION, *Tiamat.compiler)
+      Tiamat::TiamatServer.run(uri, Tiamat::VERSION, *Tiamat.compiler.reverse)
     }
     Tiamat::Server.new(uri).instance_eval {
       @drb_object.ping

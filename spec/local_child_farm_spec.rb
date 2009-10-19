@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/tiamat_spec_base'
 
 describe Tiamat::LocalChildFarm do
   before :all do
-    @farm = Tiamat::LocalChildFarm.new(4, *Tiamat.compiler)
+    @farm = Tiamat::LocalChildFarm.new(4, *Tiamat.compiler.reverse)
   end
 
   after :all do

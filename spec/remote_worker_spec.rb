@@ -7,7 +7,7 @@ describe Tiamat::RemoteWorker do
     }
     # pretend these servers were running beforehand
     @servers = @uris.map { |uri|
-      Tiamat::LocalChildServer.new(uri, *Tiamat.compiler)
+      Tiamat::LocalChildServer.new(uri, *Tiamat.compiler.reverse)
     }
   end
 

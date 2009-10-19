@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/tiamat_spec_base'
 describe Tiamat::LocalChildServer do
   before :all do
     @server = Tiamat::LocalChildServer.new(
-      "druby://localhost:27272", *Tiamat.compiler
+      "druby://localhost:27272", *Tiamat.compiler.reverse
     )
   end
 

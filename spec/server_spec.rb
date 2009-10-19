@@ -3,7 +3,9 @@ require File.dirname(__FILE__) + '/tiamat_spec_base'
 describe Tiamat::Server do
   before :all do
     @url = "druby://localhost:27272"
-    @remote_server = Tiamat::LocalChildServer.new(@url, *Tiamat.compiler)
+    @remote_server = Tiamat::LocalChildServer.new(
+      @url, *Tiamat.compiler.reverse
+    )
     @server = Tiamat::Server.new(@url)
   end
 

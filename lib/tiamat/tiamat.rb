@@ -13,7 +13,7 @@ module Tiamat
     # responsible for closing it.
     #
     def open_local(num_parallel, *requires, &block)
-      args = [num_parallel] + Tiamat.compiler + requires
+      args = [num_parallel] + Tiamat.compiler.reverse + requires
       open_worker(LocalChildWorker, *args, &block)
     end
 

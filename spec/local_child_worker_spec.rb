@@ -4,7 +4,7 @@ require 'benchmark'
 
 describe Tiamat::LocalChildWorker do
   before :all do
-    Tiamat::LocalChildWorker.open(2, *Tiamat.compiler)
+    Tiamat::LocalChildWorker.open(2, *Tiamat.compiler.reverse)
   end
 
   after :all do
