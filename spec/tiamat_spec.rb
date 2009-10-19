@@ -22,25 +22,29 @@ describe Tiamat do
       it "should launch local servers" do
         one_cpu = Benchmark.realtime { @mod.compute(2).total }
         two_cpu = Tiamat.open_local(2) {
+          Pure.worker.should eql(Tiamat::LocalChildWorker)
+          Pure.worker.closed?.should eql(false)
           Benchmark.realtime { @mod.compute.total }
         }
         (two_cpu/one_cpu).should be_close(0.5, 0.25)
-        Tiamat::LocalChildWorker.closed?.should == true
+        Tiamat::LocalChildWorker.closed?.should eql(true)
       end
     end
 
     describe "without block" do
       it "should launch local servers" do
         one_cpu = Benchmark.realtime { @mod.compute(2).total }
-        Tiamat.open_local(2)
+        Pure.worker = Tiamat.open_local(2)
         begin
+          Pure.worker.should eql(Tiamat::LocalChildWorker)
+          Pure.worker.closed?.should eql(false)
           two_cpu = Benchmark.realtime { @mod.compute.total }
           (two_cpu/one_cpu).should be_close(0.5, 0.25)
-          Tiamat::LocalChildWorker.closed?.should == false
         ensure
-          Tiamat.close_local
-          Pure.worker.should eql(Pure::NativeWorker)
+          Pure.worker.close
+          Pure.worker = Pure::NativeWorker
         end
+        Tiamat::LocalChildWorker.closed?.should eql(true)
       end
     end
 
@@ -82,32 +86,35 @@ describe Tiamat do
     after :all do
       @servers.each { |t| t.close }
       Tiamat::RemoteWorker.close
-      Pure.worker = Pure::NativeWorker
     end
 
     describe "with block" do
       it "should connect to remote servers" do
         one_cpu = Benchmark.realtime { @mod.compute(2).total }
         two_cpu = Tiamat.open_remote(*@uris) {
+          Pure.worker.should eql(Tiamat::RemoteWorker)
+          Pure.worker.closed?.should eql(false)
           Benchmark.realtime { @mod.compute.total }
         }
         (two_cpu/one_cpu).should be_close(0.5, 0.25)
-        Tiamat::RemoteWorker.closed?.should == true
+        Tiamat::RemoteWorker.closed?.should eql(true)
       end
     end
 
     describe "without block" do
       it "should connect to remote servers" do
+        one_cpu = Benchmark.realtime { @mod.compute(2).total }
+        Pure.worker = Tiamat.open_remote(*@uris)
         begin
-          one_cpu = Benchmark.realtime { @mod.compute(2).total }
-          Tiamat.open_remote(*@uris)
+          Pure.worker.should eql(Tiamat::RemoteWorker)
+          Pure.worker.closed?.should eql(false)
           two_cpu = Benchmark.realtime { @mod.compute.total }
           (two_cpu/one_cpu).should be_close(0.5, 0.25)
-          Tiamat::RemoteWorker.closed?.should == false
         ensure
-          Tiamat.close_remote
-          Pure.worker.should eql(Pure::NativeWorker)
+          Pure.worker.close
+          Pure.worker = Pure::NativeWorker
         end
+        Tiamat::RemoteWorker.closed?.should eql(true)
       end
     end
   end
