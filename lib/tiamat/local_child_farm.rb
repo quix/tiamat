@@ -16,8 +16,7 @@ module Tiamat
       end
 
       def port_begin
-        # /etc/services: 24554-34676 Unassigned
-        24676
+        48727
       end
     end
   end
