@@ -18,7 +18,8 @@ Jumpstart.doc_to_spec(readme, "Synopsis") {
   }
 
   [expected, actual].each { |result|
-    (result[:two_cpu]/result[:one_cpu]).should be_close(0.5, 0.15)
+    epsilon = 0.15 + TiamatSpecBase.slow_platform_epsilon
+    (result[:two_cpu]/result[:one_cpu]).should be_close(0.5, epsilon)
   }
 }
 
