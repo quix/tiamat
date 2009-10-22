@@ -41,7 +41,11 @@ module Tiamat
     class << self
       def run(uri, *args)
         DRb.start_service(uri, new(*args))
-        FINISH.pop
+        begin
+          FINISH.pop
+        ensure
+          DRb.stop_service
+        end
       end
     end
   end
