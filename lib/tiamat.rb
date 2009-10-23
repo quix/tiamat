@@ -28,7 +28,6 @@ require 'drb'
 require 'pure'
 
 require 'tiamat/error'
-require 'tiamat/version'
 require 'tiamat/util'
 require 'tiamat/connector'
 require 'tiamat/server'

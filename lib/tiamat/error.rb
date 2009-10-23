@@ -3,15 +3,6 @@ module Tiamat
   class Error < StandardError
   end
 
-  class VersionError < Error
-    def initialize(expected, actual)
-      @expected, @actual = expected, actual
-      super("expected version #{@expected}, got #{@actual}")
-    end
-
-    attr_reader :expected, :actual
-  end
-
   class AlreadyOpenError < Error
     def initialize(object)
       @object = object

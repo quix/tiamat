@@ -9,11 +9,7 @@ module Tiamat
   class TiamatServer
     FINISH = Queue.new
 
-    def initialize(version, compiler_name, *requires)
-      unless version == Tiamat::VERSION
-        raise VersionError.new(Tiamat::VERSION, version)
-      end
-
+    def initialize(compiler_name, *requires)
       @compiler_name = compiler_name
 
       requires.each { |path| require path }

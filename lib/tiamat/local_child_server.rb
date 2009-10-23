@@ -3,7 +3,7 @@ module Tiamat
   class LocalChildServer < ChildServer
     def launch(uri, compiler_name, *requires)
       args = [compiler_name] + requires
-      Util.run_ruby(self.class.server_path, uri, Tiamat::VERSION, *args)
+      Util.run_ruby(self.class.server_path, uri, *args)
     end
 
     class << self
