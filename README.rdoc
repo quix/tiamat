@@ -35,12 +35,15 @@ Pure.
 
 == Description
 
-Tiamat is a worker plugin for the pure functional package (Pure).  It
-uses DRb to coordinate Ruby interpreters which are driven by Pure's
+Tiamat is a worker plugin for the pure functional package
+(Pure[http://purefunctional.rubyforge.org]).  It links Ruby
+interpreters together with DRb, forming a back-end for Pure's
 parallelizing engine.
 
+Tiamat does not modify any of the standard classes.
+
 Tiamat has been tested on MRI 1.8.6, 1.8.7, 1.9.1, 1.9.2, and
-jruby-1.4--1.8.
+jruby-1.4.
 
 == Install
 
@@ -52,8 +55,12 @@ Or for the (non-gem) .tgz package,
 
 == Links
 
-* pure source: http://github.com/quix/pure
-* tiamat source: http://github.com/quix/tiamat
+* Pure: http://purefunctional.rubyforge.org
+
+* Documentation: http://tiamat.rubyforge.org
+* Download: http://rubyforge.org/frs/?group_id=9145
+* Rubyforge home: http://rubyforge.org/projects/tiamat
+* Repository: http://github.com/quix/tiamat
 
 == Adding +require+ Paths to Local Servers
 
@@ -80,19 +87,16 @@ Or for the (non-gem) .tgz package,
 
 First install Tiamat on the remote machines.  To start the server,
 
-  % tiamat-server [drb address] [tiamat version] Pure::Compiler::RubyParser pure/compiler/ruby_parser [additional requires]
-
-(Other compilers may exist in the future, but currently
-RubyParser/Ruby2Ruby is the only game in town.)
+  % tiamat-server [drb address] [compiler name] [requires]
 
 For example,
 
-  % tiamat-server druby://192.168.4.1:27272 0.1.0 Pure::Compiler::RubyParser pure/compiler/ruby_parser matrix complex
+  % tiamat-server druby://192.168.4.1:27272 Pure::Compiler::RubyParser pure/compiler/ruby_parser matrix complex
 
 This will make the Matrix and Complex classes available on the remote
 server.
 
-To connect (continuing the example in Synopsis),
+To connect (continuing the example in the synopsis),
 
   Tiamat.open_remote('druby://192.168.4.1:27272', 'druby://192.168.4.2:27272') {
     puts Benchmark.realtime { mod.compute.total }
@@ -102,8 +106,32 @@ To connect (continuing the example in Synopsis),
 
 Running <tt>tiamat-server</tt> is among the most insecure things you
 can possibly do with a computer.  The purpose of
-<tt>tiamat-server</tt> is to run arbitrary code.  Only run it inside a
-secure network or private tunnel.
+<tt>tiamat-server</tt> is to execute arbitrary code.  Only run it
+inside a secure network or private tunnel.
+
+== Configuration
+
+Configuration consists of two attributes: <tt>Pure.parser</tt> for
+extracting method definitions and <tt>Tiamat.compiler</tt> for
+converting the extracted data into a callable Ruby object.  (Though
+strictly speaking <tt>Tiamat.compiler</tt> is only necessary for
+launching local servers.)
+
+<tt>require 'tiamat/autoconfig'</tt> finds the optimal parser-compiler
+pair for the running version of Ruby.  A configuration may also be
+chosen manually, e.g. <tt>require 'tiamat/config/ruby_parser'</tt>.
+
+== Restrictions
+
+RubyParser + Ruby2Ruby is currently the only known toolchain which
+provides the ability to extract code, transform the AST, send it over
+the wire, and reconstruct it on another machine.
+
+Therefore the syntax of files which contain +pure+ blocks is limited
+to the syntax supported by RubyParser.  Other parser plugins with more
+syntax rules are available but they have no compiler counterpart.  See
+the latter part of Pure[http://purefunctional.rubyforge.org] for more
+information.
 
 == About DRbConnError
 
@@ -132,9 +160,9 @@ beginning of your code:
 
 See the DRb documentation for more information.
 
-Tiamat does not start a local DRb service because the passing of
-undumpable arguments to a pure function is likely to be an error, as
-the generated proxies are not thread-safe.
+Tiamat does not start a local DRb service by default because the
+passing of undumpable arguments to a pure function is likely to be an
+error, as the generated proxies are not thread-safe.
 
 == Author
 
