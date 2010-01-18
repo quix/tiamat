@@ -123,15 +123,10 @@ chosen manually, e.g. <tt>require 'tiamat/config/ruby_parser'</tt>.
 
 == Restrictions
 
-RubyParser + Ruby2Ruby is currently the only known toolchain which
-provides the ability to extract code, transform the AST, send it over
-the wire, and reconstruct it on another machine.
-
+RubyParser + Ruby2Ruby provides the ability to extract code, transform
+the AST, send it over the wire, and reconstruct it on another machine.
 Therefore the syntax of files which contain +pure+ blocks is limited
-to the syntax supported by RubyParser.  Other parser plugins with more
-syntax rules are available but they have no compiler counterpart.  See
-the latter part of Pure[http://purefunctional.rubyforge.org] for more
-information.
+to the syntax supported by RubyParser.
 
 == About DRbConnError
 
