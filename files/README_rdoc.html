@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+  <head>
+    <title>README.rdoc</title>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <link href='../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+    <script type='text/javascript'>
+      //<![CDATA[
+        function popupCode(url) {
+          window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+        }
+        
+        function toggleCode(id) {
+          var code = document.getElementById(id)
+        
+          code.style.display = code.style.display != 'block' ? 'block' : 'none'
+          return true
+        }
+        
+        // Make codeblocks hidden by default
+        document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+      //]]>
+    </script>
+  </head>
+  <body class='page'>
+    <div class='file' id='wrapper'>
+      <div class='header'>
+        <div class='name'>README.rdoc</div>
+        <div class='paths'>
+          README.rdoc
+        </div>
+        <div class='last-update'>
+          Last Update:
+          <span class='datetime'>2011-02-22 07:29:55 -0500</span>
+        </div>
+      </div>
+      <div id='content'>
+        <div id='text'>
+          <div id='description'>
+            <h1><a href="../classes/Tiamat.html">Tiamat</a></h1>
+            <h2>Summary</h2>
+            <p>
+            Automatic parallelism across multiple cores and machines: a plugin for
+            Pure.
+            </p>
+            <h2>Synopsis</h2>
+            <pre>require 'tiamat/autoconfig'&#x000A;require 'benchmark'&#x000A;&#x000A;mod = Pure.define do&#x000A;  def total(left, right)&#x000A;    left + right&#x000A;  end&#x000A;&#x000A;  def left&#x000A;    (1..500_000).inject(0) { |acc, n| acc + n }&#x000A;  end&#x000A;&#x000A;  def right&#x000A;    (1..500_000).inject(0) { |acc, n| acc + n }&#x000A;  end&#x000A;end&#x000A;&#x000A;# compute using two threads&#x000A;puts Benchmark.realtime { mod.compute(2).total }  # =&gt; 0.4432079792022705&#x000A;&#x000A;# compute using two local Ruby interpreters&#x000A;Tiamat.open_local(2) {&#x000A;  puts Benchmark.realtime { mod.compute.total }   # =&gt; 0.2420041561126709&#x000A;}</pre>
+            <h2>Install</h2>
+            <pre>% gem install tiamat</pre>
+            <p>
+            Or from the (non-gem) .tgz package,
+            </p>
+            <pre>% rake install</pre>
+            <h2>Description</h2>
+            <p>
+            <a href="../classes/Tiamat.html">Tiamat</a> is a worker plugin for the pure
+            functional package (<a
+            href="http://purefunctional.rubyforge.org">Pure</a>).  It links Ruby
+            interpreters together with DRb, forming a back-end for Pure&#8217;s
+            parallelizing engine.
+            </p>
+            <p>
+            <a href="../classes/Tiamat.html">Tiamat</a> does not modify any of the
+            standard classes.
+            </p>
+            <p>
+            <a href="../classes/Tiamat.html">Tiamat</a> has been tested on MRI 1.8.6,
+            1.8.7, 1.9.1, 1.9.2, and jruby-1.4.
+            </p>
+            <h2>Links</h2>
+            <ul>
+            <li><p>
+            Home: <a target="_top" href="http://quix.github.com/tiamat">quix.github.com/tiamat</a>
+            </p>
+            </li>
+            <li><p>
+            Feature Requests, Bug Reports: <a
+            href="http://github.com/quix/tiamat/issues">github.com/quix/tiamat/issues</a>
+            </p>
+            </li>
+            <li><p>
+            Manual Download: <a
+            href="http://github.com/quix/tiamat/archives/master">github.com/quix/tiamat/archives/master</a>
+            </p>
+            </li>
+            <li><p>
+            Repository: <a
+            href="http://github.com/quix/tiamat">github.com/quix/tiamat</a>
+            </p>
+            </li>
+            </ul>
+            <h2>Adding <tt>require</tt> Paths to Local Servers</h2>
+            <pre>require 'tiamat/autoconfig'&#x000A;require 'pure/dsl'&#x000A;&#x000A;require 'matrix'&#x000A;require 'complex'&#x000A;&#x000A;mod = pure do&#x000A;  def f(x, y)&#x000A;    x + y&#x000A;  end&#x000A;end&#x000A;&#x000A;a = Matrix[[1, 2], [3, 4]]&#x000A;b = Matrix[[1, Complex(0, 1)], [Complex(0, -1), 1]]&#x000A;&#x000A;Tiamat.open_local(2, 'matrix', 'complex') {&#x000A;  puts mod.compute(:x =&gt; a, :y =&gt; b).f  # =&gt; Matrix[[2, 2+1i], [3-1i, 5]]&#x000A;}</pre>
+            <h2>Running Remote Servers</h2>
+            <p>
+            First install <a href="../classes/Tiamat.html">Tiamat</a> on the remote
+            machines.  To start the server,
+            </p>
+            <pre>% tiamat-server [drb address] [compiler name] [requires]</pre>
+            <p>
+            For example,
+            </p>
+            <pre>% tiamat-server druby://192.168.4.1:27272 Pure::Compiler::RubyParser pure/compiler/ruby_parser matrix complex</pre>
+            <p>
+            This will make the Matrix and Complex classes available on the remote
+            server.
+            </p>
+            <p>
+            To connect (continuing the example in the synopsis),
+            </p>
+            <pre>Tiamat.open_remote('druby://192.168.4.1:27272', 'druby://192.168.4.2:27272') {&#x000A;  puts Benchmark.realtime { mod.compute.total }&#x000A;}</pre>
+            <h2>Security</h2>
+            <p>
+            Running <tt>tiamat-server</tt> is among the most insecure things you can
+            possibly do with a computer.  The purpose of <tt>tiamat-server</tt> is to
+            execute arbitrary code.  Only run it inside a secure network or private
+            tunnel.
+            </p>
+            <h2>Configuration</h2>
+            <p>
+            Configuration consists of two attributes: <tt>Pure.parser</tt> for
+            extracting method definitions and <tt>Tiamat.compiler</tt> for converting
+            the extracted data into a callable Ruby object.  (Though strictly speaking
+            <tt>Tiamat.compiler</tt> is only necessary for launching local servers.)
+            </p>
+            <p>
+            <tt>require 'tiamat/autoconfig'</tt> finds the optimal parser-compiler pair
+            for the running version of Ruby.  A configuration may also be chosen
+            manually, e.g. <tt>require 'tiamat/config/ruby_parser'</tt>.
+            </p>
+            <h2>Restrictions</h2>
+            <p>
+            RubyParser + Ruby2Ruby provides the ability to extract code, transform the
+            AST, send it over the wire, and reconstruct it on another machine.
+            Therefore the syntax of files which contain <tt>pure</tt> blocks is limited
+            to the syntax supported by RubyParser.
+            </p>
+            <h2>About DRbConnError</h2>
+            <pre>require 'tiamat/autoconfig'&#x000A;require 'pure/dsl'&#x000A;&#x000A;Tiamat.open_local(2) {&#x000A;  pure do&#x000A;    def hello(out)&#x000A;      out.puts(&quot;hello&quot;)&#x000A;    end&#x000A;  end.compute(:out =&gt; STDOUT).hello  # =&gt; raises DRb::DRbConnError&#x000A;}</pre>
+            <p>
+            This fails because we are trying to send STDOUT to another Ruby
+            interpreter.  Some Ruby objects have no Marshal.dump, such as IO instances
+            (like STDOUT) and Procs.  To compensate, the remote DRb server tries to
+            phone home with a proxy object but no local server is running.
+            </p>
+            <p>
+            If you are interested in a quick fix, try placing this at the beginning of
+            your code:
+            </p>
+            <pre>require 'drb'&#x000A;DRb.start_service</pre>
+            <p>
+            See the DRb documentation for more information.
+            </p>
+            <p>
+            <a href="../classes/Tiamat.html">Tiamat</a> does not start a local DRb
+            service by default because the passing of undumpable arguments to a pure
+            function is likely to be an error, as the generated proxies are not
+            thread-safe.
+            </p>
+            <h2>Author</h2>
+            <ul>
+            <li><p>
+            James M. Lawrence <quixoticsycophant@gmail.com>
+            </p>
+            </li>
+            </ul>
+            <h2>License</h2>
+            <pre>Copyright (c) 2009 James M. Lawrence.  All rights reserved.&#x000A;&#x000A;Permission is hereby granted, free of charge, to any person&#x000A;obtaining a copy of this software and associated documentation files&#x000A;(the &quot;Software&quot;), to deal in the Software without restriction,&#x000A;including without limitation the rights to use, copy, modify, merge,&#x000A;publish, distribute, sublicense, and/or sell copies of the Software,&#x000A;and to permit persons to whom the Software is furnished to do so,&#x000A;subject to the following conditions:&#x000A;&#x000A;The above copyright notice and this permission notice shall be&#x000A;included in all copies or substantial portions of the Software.&#x000A;&#x000A;THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,&#x000A;EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF&#x000A;MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND&#x000A;NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS&#x000A;BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN&#x000A;ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN&#x000A;CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE&#x000A;SOFTWARE.</pre>
+          </div>
+          <div id='context'>
+          </div>
+        </div>
+      </div>
+      <div id='footer-push'></div>
+    </div>
+    <div id='footer'>
+      <a target="docwin" href="http://github.com/mislav/hanna/tree/master"><strong>Hanna</strong> RDoc template</a>
+    </div>
+  </body>
+</html>
