@@ -3,9 +3,9 @@ $LOAD_PATH.unshift "devel"
 require "jumpstart"
 
 Jumpstart.new "tiamat" do |s|
-  s.developer("James M. Lawrence", "quixoticsycophant@gmail.com")
-  s.rubyforge_user = "quix"
-  s.extra_deps = [
+  s.developers << ["James M. Lawrence", "quixoticsycophant@gmail.com"]
+  s.github_user = "quix"
+  s.dependencies = [
     ["pure", ">= 0.2.0"],
     ["ruby_parser", ">= 2.0.4"],
     ["ruby2ruby", ">= 1.2.4"],

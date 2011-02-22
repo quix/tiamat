@@ -33,6 +33,14 @@ Pure.
     puts Benchmark.realtime { mod.compute.total }   # => 0.2420041561126709
   }
 
+== Install
+
+  % gem install tiamat
+
+Or from the (non-gem) .tgz package,
+
+  % rake install
+
 == Description
 
 Tiamat is a worker plugin for the pure functional package
@@ -45,21 +53,11 @@ Tiamat does not modify any of the standard classes.
 Tiamat has been tested on MRI 1.8.6, 1.8.7, 1.9.1, 1.9.2, and
 jruby-1.4.
 
-== Install
-
-  % gem install tiamat
-
-Or for the (non-gem) .tgz package,
-
-  % ruby install.rb [--uninstall]
-
 == Links
 
-* Pure: http://purefunctional.rubyforge.org
-
-* Documentation: http://tiamat.rubyforge.org
-* Download: http://rubyforge.org/frs/?group_id=9145
-* Rubyforge home: http://rubyforge.org/projects/tiamat
+* Home: http://quix.github.com/tiamat
+* Feature Requests, Bug Reports: http://github.com/quix/tiamat/issues
+* Manual Download: http://github.com/quix/tiamat/archives/master
 * Repository: http://github.com/quix/tiamat
 
 == Adding +require+ Paths to Local Servers
